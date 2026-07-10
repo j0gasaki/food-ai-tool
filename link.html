@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>城ヶ崎｜飲食店のAI活用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Shippori+Mincho:wght@500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1C1A;
+    --charcoal:#26241F;
+    --charcoal-2:#332F28;
+    --paper:#FAF6EC;
+    --paper-line:#E4DCC6;
+    --stamp:#B5342A;
+    --muted:#948C77;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:var(--charcoal);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,255,255,0.03), transparent 40%);
+    color:var(--paper);
+    font-family:'Noto Sans JP', sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:56px 20px;
+  }
+  .card{
+    width:100%;
+    max-width:420px;
+  }
+  .mark{
+    width:88px; height:88px;
+    border:3px solid var(--stamp);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 22px;
+  }
+  .mark span{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:900;
+    font-size:36px;
+    color:var(--stamp);
+  }
+  h1{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:900;
+    font-size:26px;
+    text-align:center;
+    margin:0 0 6px;
+  }
+  .sub{
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+    letter-spacing:0.06em;
+    margin:0 0 36px;
+  }
+  .links{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  a.btn{
+    display:block;
+    text-decoration:none;
+    padding:20px 22px;
+    border-radius:6px;
+    font-family:'Noto Sans JP', sans-serif;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  a.btn:active{ transform:scale(0.98); }
+
+  .btn-primary{
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .btn-primary .title{ font-weight:700; font-size:16px; }
+  .btn-primary .desc{ font-size:12.5px; color:#6b6656; margin-top:4px; }
+
+  .btn-accent{
+    background:var(--stamp);
+    color:var(--paper);
+  }
+  .btn-accent .title{ font-weight:700; font-size:16px; }
+  .btn-accent .desc{ font-size:12.5px; color:#f3d9d5; margin-top:4px; }
+
+  .btn-outline{
+    background:transparent;
+    border:1px solid #4A453A;
+    color:var(--paper);
+  }
+  .btn-outline .title{ font-weight:700; font-size:15px; }
+  .btn-outline .desc{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+  .tag{
+    display:inline-block;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    padding:2px 8px;
+    border-radius:100px;
+    margin-bottom:8px;
+  }
+  .tag-free{ background:rgba(250,246,236,0.15); color:var(--paper); }
+  .tag-buy{ background:rgba(255,255,255,0.18); color:var(--paper); }
+
+  footer{
+    text-align:center;
+    margin-top:40px;
+    font-size:11px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark"><span>城</span></div>
+    <h1>城ヶ崎</h1>
+    <p class="sub">飲食店の「書く仕事」を、AIで軽くする</p>
+
+    <div class="links">
+      <a class="btn btn-primary" href="https://j0gasaki.github.io/food-ai-tool/demo.html" target="_blank" rel="noopener">
+        <span class="tag tag-free" style="background:#EAF3EF;color:#1F5C4C;">無料</span>
+        <div class="title">文章オートメーカーを今すぐ試す</div>
+        <div class="desc">口コミ返信・SNS投稿の2種類を体験できます</div>
+      </a>
+
+      <a class="btn btn-accent" href="https://jogasaki.booth.pm/items/8596597" target="_blank" rel="noopener">
+        <span class="tag tag-buy">980円〜</span>
+        <div class="title">プロンプト集＋ツールをまとめて購入</div>
+        <div class="desc">BOOTHで見る（口コミ返信・SNS投稿・予約対応など20種）</div>
+      </a>
+
+      <a class="btn btn-outline" href="https://x.com/jogasaki_lab" target="_blank" rel="noopener">
+        <div class="title">Xをフォローする</div>
+        <div class="desc">開発の裏側・使い方のコツを発信中</div>
+      </a>
+    </div>
+
+    <footer>飲食店・小規模店舗向け AI活用サポート</footer>
+  </div>
+</body>
+</html>
