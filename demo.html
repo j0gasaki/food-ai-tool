@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>文章オートメーカー【体験版】― 店舗向け即応ジェネレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Shippori+Mincho:wght@500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1C1A;
+    --charcoal:#26241F;
+    --charcoal-2:#332F28;
+    --paper:#FAF6EC;
+    --paper-line:#E4DCC6;
+    --stamp:#B5342A;
+    --stamp-dark:#8F2620;
+    --muted:#948C77;
+    --steel:#4B564F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--charcoal);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,255,255,0.03), transparent 40%);
+    color:var(--paper);
+    font-family:'Noto Sans JP', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:24px;
+    border-bottom:2px solid var(--charcoal-2);
+    padding-bottom:28px;
+    margin-bottom:40px;
+    flex-wrap:wrap;
+  }
+  .eyebrow{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    letter-spacing:0.25em;
+    font-size:12px;
+    color:var(--stamp);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:900;
+    font-size:clamp(28px,4vw,44px);
+    line-height:1.15;
+    margin:0;
+    letter-spacing:0.01em;
+  }
+  header p{
+    max-width:340px;
+    font-size:13.5px;
+    line-height:1.8;
+    color:var(--muted);
+    margin:0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:minmax(320px,420px) 1fr;
+    gap:32px;
+    align-items:start;
+  }
+  @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
+
+  /* ---- 左：注文票(フォーム) ---- */
+  .order{
+    background:var(--charcoal-2);
+    border:1px solid #423D33;
+    border-radius:4px;
+    padding:28px 26px 30px;
+  }
+  .order h2{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:15px;
+    font-weight:700;
+    margin:0 0 20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--paper);
+  }
+  .order h2::before{
+    content:"";
+    width:8px;height:8px;
+    background:var(--stamp);
+    display:inline-block;
+    transform:rotate(45deg);
+  }
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    margin-bottom:7px;
+    font-weight:500;
+  }
+  select, input[type=text], textarea{
+    width:100%;
+    background:#1F1D19;
+    border:1px solid #4A453A;
+    color:var(--paper);
+    padding:11px 12px;
+    font-family:'Noto Sans JP', sans-serif;
+    font-size:14px;
+    border-radius:2px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  select:focus, input:focus, textarea:focus{ border-color:var(--stamp); }
+  textarea{ resize:vertical; min-height:64px; line-height:1.6; }
+  .radio-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .radio-row button{
+    flex:1 1 auto;
+    background:#1F1D19;
+    border:1px solid #4A453A;
+    color:var(--muted);
+    padding:9px 10px;
+    font-size:12.5px;
+    font-family:'Noto Sans JP', sans-serif;
+    border-radius:2px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .radio-row button.active{
+    background:var(--stamp);
+    border-color:var(--stamp);
+    color:#fff;
+    font-weight:700;
+  }
+  .make-btn{
+    width:100%;
+    margin-top:8px;
+    background:var(--stamp);
+    border:none;
+    color:#fff;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.05em;
+    padding:15px;
+    border-radius:2px;
+    cursor:pointer;
+    box-shadow:0 3px 0 var(--stamp-dark);
+    transition:transform .08s ease;
+  }
+  .make-btn:active{ transform:translateY(3px); box-shadow:none; }
+  .hint{ font-size:11px; color:var(--muted); margin-top:14px; line-height:1.7; }
+
+  .upsell{
+    margin-top:22px;
+    padding:18px 18px 20px;
+    background:#1F1D19;
+    border:1px dashed var(--stamp);
+    border-radius:2px;
+  }
+  .upsell-label{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:12px;
+    font-weight:700;
+    color:var(--stamp);
+    letter-spacing:0.05em;
+    margin-bottom:8px;
+  }
+  .upsell-body{
+    font-size:12.5px;
+    line-height:1.8;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .upsell-btn{
+    display:inline-block;
+    width:100%;
+    text-align:center;
+    box-sizing:border-box;
+    background:var(--stamp);
+    color:#fff;
+    text-decoration:none;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    padding:12px;
+    border-radius:2px;
+  }
+
+  /* ---- 右：レシート ---- */
+  .receipt-stage{
+    display:flex;
+    justify-content:center;
+    padding-top:6px;
+  }
+  .receipt{
+    background:var(--paper);
+    color:var(--ink);
+    width:100%;
+    max-width:460px;
+    padding:34px 30px 46px;
+    position:relative;
+    font-family:'Shippori Mincho', serif;
+    box-shadow:0 20px 40px rgba(0,0,0,0.35);
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 97%,
+      95% 100%, 90% 97%, 85% 100%, 80% 97%, 75% 100%, 70% 97%,
+      65% 100%, 60% 97%, 55% 100%, 50% 97%, 45% 100%, 40% 97%,
+      35% 100%, 30% 97%, 25% 100%, 20% 97%, 15% 100%, 10% 97%, 5% 100%, 0% 97%
+    );
+  }
+  .receipt::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background:repeating-linear-gradient(90deg, var(--paper-line) 0 8px, transparent 8px 16px);
+  }
+  .r-head{
+    text-align:center;
+    border-bottom:1px dashed var(--paper-line);
+    padding-bottom:14px;
+    margin-bottom:16px;
+  }
+  .r-head .r-title{ font-weight:600; font-size:15px; letter-spacing:0.15em; }
+  .r-head .r-sub{ font-size:10.5px; color:var(--muted); letter-spacing:0.1em; margin-top:4px; font-family:'Noto Sans JP',sans-serif; }
+  .r-meta{
+    font-family:'Noto Sans JP', sans-serif;
+    font-size:10.5px;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .r-body{
+    font-size:14.5px;
+    line-height:2;
+    white-space:pre-wrap;
+    min-height:120px;
+    letter-spacing:0.01em;
+  }
+  .r-body .cursor{
+    display:inline-block;
+    width:8px; height:16px;
+    background:var(--ink);
+    vertical-align:middle;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{opacity:0;} }
+  .r-foot{
+    margin-top:20px;
+    padding-top:14px;
+    border-top:1px dashed var(--paper-line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .r-foot-label{ font-family:'Noto Sans JP',sans-serif; font-size:10px; color:var(--muted); letter-spacing:0.1em; }
+  .copy-btn{
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    font-family:'Noto Sans JP', sans-serif;
+    font-size:11.5px;
+    padding:7px 14px;
+    border-radius:2px;
+    cursor:pointer;
+    letter-spacing:0.05em;
+  }
+  .copy-btn:hover{ background:var(--ink); color:var(--paper); }
+  .stamp{
+    position:absolute;
+    top:26px; right:28px;
+    width:64px; height:64px;
+    border:3px solid var(--stamp);
+    border-radius:50%;
+    color:var(--stamp);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:0.05em;
+    transform:rotate(-14deg) scale(0);
+    opacity:0;
+    transition:transform .35s cubic-bezier(.2,1.6,.4,1), opacity .2s ease;
+  }
+  .stamp.show{ transform:rotate(-14deg) scale(1); opacity:0.88; }
+
+  footer{
+    margin-top:56px;
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="eyebrow">Text Order Maker / 文章オートメーカー【体験版】</p>
+      <h1>入力すれば、<br>その場で文章が“発券”される。</h1>
+    </div>
+    <p>まずは2種類だけ、無料でお試しいただけます。実際の生成スピードと文章のトーンを体感してみてください。</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- 注文票 -->
+    <div class="order">
+      <h2>ご注文票</h2>
+
+      <div class="field">
+        <label>① 何を作りますか</label>
+        <select id="category">
+          <option value="review_good">口コミ返信（高評価）</option>
+          <option value="sns_menu">SNS投稿（新メニュー告知）</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>② トーン</label>
+        <div class="radio-row" id="tone-row">
+          <button data-tone="丁寧" class="active">丁寧</button>
+          <button data-tone="親しみやすい">親しみやすい</button>
+          <button data-tone="落ち着いた">落ち着いた</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>③ 店名</label>
+        <input type="text" id="shopname" placeholder="例：小料理屋 花月" value="花月">
+      </div>
+
+      <div class="field" id="dynamic-field">
+        <!-- JSで動的に差し替え -->
+      </div>
+
+      <button class="make-btn" onclick="makeReceipt()">発券する ▸</button>
+      <p class="hint">※ すべてこの画面内だけで処理され、外部に送信されません。生成後は内容を確認し、必要に応じて手直ししてご利用ください。</p>
+
+      <div class="upsell">
+        <div class="upsell-label">体験版はこの2種類のみです</div>
+        <div class="upsell-body">
+          予約対応・キャンセル対応・求人文・FAQなど<br>
+          全8カテゴリ×3トーン＋プロンプト集20種のフルセットは、<br>
+          BOOTHでご購入いただけます。
+        </div>
+        <a class="upsell-btn" href="https://jogasaki.booth.pm/items/8596597" target="_blank" rel="noopener">フルセットをBOOTHで見る ▸</a>
+      </div>
+    </div>
+
+    <!-- レシート -->
+    <div class="receipt-stage">
+      <div class="receipt" id="receipt">
+        <div class="stamp" id="stamp">発行済</div>
+        <div class="r-head">
+          <div class="r-title">御 用 命 控</div>
+          <div class="r-sub">TEXT ORDER SLIP</div>
+        </div>
+        <div class="r-meta">
+          <span id="r-date">----/--/--</span>
+          <span id="r-no">No. 0000</span>
+        </div>
+        <div class="r-body" id="r-body">左の注文票を選んで「発券する」を押してください。</div>
+        <div class="r-foot">
+          <span class="r-foot-label">COPY THIS SLIP</span>
+          <button class="copy-btn" onclick="copyReceipt()">コピーする</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>飲食店・小規模店舗向け 文章オートメーカー Ver.1.0 ｜ 本ツールは商用利用いただけますが、ツール自体の再配布・転売はご遠慮ください。</footer>
+</div>
+
+<script>
+let currentTone = "丁寧";
+let orderCount = 42;
+
+document.querySelectorAll('#tone-row button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#tone-row button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTone = btn.dataset.tone;
+  });
+});
+
+const dynamicConfigs = {
+  review_good: {
+    label: "④ 口コミ本文（貼り付け）",
+    type: "textarea",
+    placeholder: "例：料理も美味しく、店員さんの対応も素晴らしかったです！"
+  },
+  review_bad: {
+    label: "④ 口コミ本文（貼り付け）",
+    type: "textarea",
+    placeholder: "例：料理は普通でした。特に印象に残らなかったです。"
+  },
+  reserve: {
+    label: "④ 予約内容（日時・人数など）",
+    type: "text",
+    placeholder: "例：7/20 19:00〜 4名 個室希望"
+  },
+  cancel: {
+    label: "④ キャンセル・変更内容",
+    type: "text",
+    placeholder: "例：体調不良のため今夜の予約をキャンセルしたい"
+  },
+  sns_menu: {
+    label: "④ 新メニュー名・特徴",
+    type: "text",
+    placeholder: "例：夏野菜の冷製パスタ、地元農家直送のトマト使用"
+  },
+  sns_staff: {
+    label: "④ スタッフ名・エピソード",
+    type: "text",
+    placeholder: "例：店長の田中、10年間毎朝市場に通って魚を選んでいる"
+  },
+  recruit: {
+    label: "④ 募集職種・条件",
+    type: "text",
+    placeholder: "例：ホールスタッフ、時給1200円、週2日〜OK"
+  },
+  faq: {
+    label: "④ 質問内容と店舗情報",
+    type: "textarea",
+    placeholder: "例：質問「駐車場はありますか」→ 店舗情報「近隣にコインパーキングあり、提携なし」"
+  }
+};
+
+function renderDynamicField(){
+  const cat = document.getElementById('category').value;
+  const cfg = dynamicConfigs[cat];
+  const wrap = document.getElementById('dynamic-field');
+  wrap.innerHTML = `<label>${cfg.label}</label>` + (
+    cfg.type === "textarea"
+      ? `<textarea id="detail"></textarea>`
+      : `<input type="text" id="detail">`
+  );
+  document.getElementById('detail').placeholder = cfg.placeholder;
+}
+document.getElementById('category').addEventListener('change', renderDynamicField);
+renderDynamicField();
+
+// ---- テンプレート群（複数バリエーション） ----
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function buildText(cat, shop, detail, tone){
+  // トーンごとに完全な文章を用意（語尾の機械的な継ぎ足しをやめ、自然な日本語を保証する）
+  const T = {
+    review_good: {
+      "丁寧": [
+`この度は「${shop}」をご利用いただき、誠にありがとうございます。\n温かいお言葉をいただき、スタッフ一同大変励みになりました。\nまたのご来店を心よりお待ち申し上げております。`,
+`身に余るお言葉、誠にありがとうございます。\n「${shop}」として、これからもお客様にご満足いただけるお店であれるよう努めて参ります。\nぜひまたお立ち寄りくださいませ。`
+      ],
+      "親しみやすい": [
+`嬉しいお言葉、本当にありがとうございます！\nスタッフ一同、すごく励みになりました。\nまたのご来店、楽しみにお待ちしています！`,
+`わあ、こんな温かい口コミをいただけて嬉しいです！\n「${shop}」らしさを感じていただけて何よりです。\nまた会える日を楽しみにしています！`
+      ],
+      "落ち着いた": [
+`温かいお言葉をいただき、ありがとうございます。\nスタッフ一同、大きな励みとなりました。\nまたのお越しをお待ちしております。`,
+`ご丁寧な口コミをお寄せいただき、感謝申し上げます。\n「${shop}」として、変わらぬ味とおもてなしを続けて参ります。\nまたのお越しをお待ちしております。`
+      ]
+    },
+    review_bad: {
+      "丁寧": [
+`この度はご期待に沿えず、誠に申し訳ございません。\n「${detail}」とのこと、真摯に受け止め、店舗全体で改善に努めて参ります。\n詳しい状況を確認させていただきたく、よろしければ店舗まで一言お声がけいただけますと幸いです。`,
+`貴重なご意見をいただき、ありがとうございます。ご不快な思いをさせてしまい、申し訳ございませんでした。\nいただいたお言葉を真摯に受け止め、「${shop}」として改善に取り組んで参ります。`
+      ],
+      "親しみやすい": [
+`ご期待に応えられず、本当にごめんなさい。\n「${detail}」というお話、しっかり受け止めて、次に活かしていきます。\nよければ詳しく聞かせてもらえると嬉しいです。`,
+`率直なご意見、ありがとうございます。至らない点があり申し訳ありませんでした。\n「${shop}」として、もっと良いお店になれるよう頑張ります。`
+      ],
+      "落ち着いた": [
+`ご期待に沿えなかったこと、心よりお詫び申し上げます。\n「${detail}」との点につきまして、真摯に受け止め、改善に努めて参ります。`,
+`貴重なご意見をお寄せいただき、ありがとうございます。ご不快な思いをおかけし、申し訳ございませんでした。\n今後の店舗運営の参考とさせていただきます。`
+      ]
+    },
+    reserve: {
+      "丁寧": [
+`${shop}でございます。\nご予約内容を確認いたしました。\n【${detail}】\n上記内容にて承りました。ご来店を心よりお待ち申し上げております。`,
+`ご予約ありがとうございます。\n「${detail}」の内容で承りました。\n当日は「${shop}」スタッフ一同、心よりお待ち申し上げております。`
+      ],
+      "親しみやすい": [
+`ご予約ありがとうございます！\n「${detail}」で承りました。\n当日お会いできるの、楽しみにしています！`,
+`${shop}です。ご予約内容、確認できました！\n【${detail}】\nこの内容でお待ちしていますね！`
+      ],
+      "落ち着いた": [
+`${shop}でございます。\nご予約内容を確認いたしました。\n【${detail}】\n上記の内容にて承っております。お越しをお待ちしております。`,
+`ご予約のご連絡、ありがとうございます。\n「${detail}」にて承りました。\n当日のお越しをお待ちしております。`
+      ]
+    },
+    cancel: {
+      "丁寧": [
+`ご連絡ありがとうございます。\n「${detail}」とのこと、承知いたしました。\nまたのご機会にぜひ「${shop}」へお越しください。心よりお待ち申し上げております。`,
+`かしこまりました。「${detail}」につきまして、問題なく対応させていただきます。\nお身体・ご都合など、どうぞお気をつけて。またお待ちしております。`
+      ],
+      "親しみやすい": [
+`連絡ありがとうございます！\n「${detail}」、了解しました。\nまたのタイミングでぜひ来てくださいね、待ってます！`,
+`了解です！「${detail}」の件、大丈夫ですよ。\nまた来られるときにお待ちしています！`
+      ],
+      "落ち着いた": [
+`ご連絡いただきありがとうございます。\n「${detail}」の件、承知いたしました。\nまたの機会にお越しをお待ちしております。`,
+`承知いたしました。「${detail}」につきまして対応いたします。\nまたのお越しをお待ちしております。`
+      ]
+    },
+    sns_menu: {
+      "丁寧": [
+`【新メニューのご案内】\n${detail}\n「${shop}」より、この時季ならではの一皿をお届けいたします。ぜひ店頭にてお試しくださいませ。`,
+`「${shop}」に新しいメニューが加わりました。\n${detail}\n季節を感じる味わいを、ぜひご賞味くださいませ。`
+      ],
+      "親しみやすい": [
+`【新メニュー登場】\n${detail}\nこの時季だけの特別な一皿、ぜひ食べにきてください🍽`,
+`新しいメニュー、できました！\n${detail}\n気になった方はぜひお店で試してみてくださいね！`
+      ],
+      "落ち着いた": [
+`【新メニューのご紹介】\n${detail}\n季節を感じる一皿を、ぜひお楽しみください。`,
+`「${shop}」に新メニューが加わりました。\n${detail}\n店頭にてご案内しております。`
+      ]
+    },
+    sns_staff: {
+      "丁寧": [
+`【スタッフ紹介】\n${detail}\n「${shop}」を支えるスタッフの一人でございます。店頭で見かけましたら、ぜひお声がけくださいませ。`,
+`本日は「${shop}」のスタッフをご紹介いたします。\n${detail}\nそのような想いのこもった一皿を、ぜひ味わいにいらしてください。`
+      ],
+      "親しみやすい": [
+`【スタッフ紹介】\n${detail}\n見かけたらぜひ声かけてくださいね！`,
+`今日は「${shop}」のスタッフを紹介します！\n${detail}\n会いに来てくださいね〜！`
+      ],
+      "落ち着いた": [
+`【スタッフ紹介】\n${detail}\n「${shop}」を支える一人です。店頭でお見かけの際は、お気軽にお声がけください。`,
+`「${shop}」のスタッフをご紹介いたします。\n${detail}`
+      ]
+    },
+    recruit: {
+      "丁寧": [
+`「${shop}」スタッフ募集中でございます。\n${detail}\n未経験の方も歓迎しております。ご応募を心よりお待ち申し上げております。`,
+`「${shop}」では、一緒に働いてくださる方を募集しております。\n${detail}\nまずはお気軽にご応募くださいませ。`
+      ],
+      "親しみやすい": [
+`「${shop}」スタッフ募集中です！\n${detail}\n未経験でも大歓迎、気軽に応募してください！`,
+`一緒に「${shop}」を盛り上げてくれる仲間、探してます！\n${detail}\nお待ちしてます！`
+      ],
+      "落ち着いた": [
+`「${shop}」スタッフ募集のお知らせです。\n${detail}\nご興味のある方はお気軽にお問い合わせください。`,
+`「${shop}」では新しい仲間を募集しております。\n${detail}`
+      ]
+    },
+    faq: {
+      "丁寧": [
+`お問い合わせいただきありがとうございます。\n${detail}\nご不明な点がございましたら、いつでもお気軽にお問い合わせくださいませ。`,
+`ご質問いただきありがとうございます。\n${detail}\n上記の内容にてご案内申し上げます。`
+      ],
+      "親しみやすい": [
+`質問ありがとうございます！\n${detail}\n他にも気になることがあれば、気軽に聞いてくださいね。`,
+`お問い合わせありがとうございます！\n${detail}`
+      ],
+      "落ち着いた": [
+`お問い合わせいただきありがとうございます。\n${detail}\nご不明な点がございましたら、お気軽にお申し付けください。`,
+`ご質問ありがとうございます。\n${detail}\n以上の内容でご案内いたします。`
+      ]
+    }
+  };
+  return pick(T[cat][tone]);
+}
+
+function typeWriter(text, el, done){
+  el.innerHTML = "";
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  function step(){
+    if(i <= text.length){
+      el.textContent = text.slice(0,i);
+      el.appendChild(cursor);
+      i++;
+      setTimeout(step, 14);
+    } else {
+      el.appendChild(cursor);
+      if(done) done();
+    }
+  }
+  step();
+}
+
+function makeReceipt(){
+  try {
+    const catEl = document.getElementById('category');
+    const detailEl = document.getElementById('detail');
+    if(!catEl || !detailEl){
+      throw new Error('入力欄が見つかりませんでした（ページの再読み込みをお試しください）');
+    }
+    const cat = catEl.value;
+    const shop = document.getElementById('shopname').value || "当店";
+    const detail = detailEl.value || "（詳細未入力）";
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+    orderCount++;
+    document.getElementById('r-date').textContent = dateStr;
+    document.getElementById('r-no').textContent = "No. " + String(orderCount).padStart(4,'0');
+
+    const stamp = document.getElementById('stamp');
+    stamp.classList.remove('show');
+
+    const text = buildText(cat, shop, detail, currentTone);
+    if(!text){
+      throw new Error('該当するテンプレートが見つかりませんでした（category: ' + cat + ' / tone: ' + currentTone + '）');
+    }
+    const bodyEl = document.getElementById('r-body');
+    typeWriter(text, bodyEl, ()=>{ stamp.classList.add('show'); });
+  } catch(err){
+    const bodyEl = document.getElementById('r-body');
+    if(bodyEl){
+      bodyEl.textContent = 'エラーが発生しました：' + err.message + '\n\n（この内容をそのまま作者に伝えていただけると、原因の特定に役立ちます）';
+    }
+    console.error(err);
+  }
+}
+
+function copyReceipt(){
+  const text = document.getElementById('r-body').textContent.replace(/\u2588|\|$/,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    const old = btn.textContent;
+    btn.textContent = "コピーしました";
+    setTimeout(()=>{ btn.textContent = old; }, 1400);
+  });
+}
+</script>
+</body>
+</html>
